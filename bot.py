@@ -7,21 +7,21 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 # Twilio Credencials  (get from your account) 
-account_sid = 'Sid'
-auth_token = 'Token'
+account_sid = 'your_account_sid'
+auth_token = 'your_auth_token'
 client = Client(account_sid, auth_token)
 
 app = Flask(__name__)
 
 def external_webhook_response(user_message):
     try:
-        response = requests.post('https://ngrok', data={"Body": user_message}) #Endpoint using ngrok (configure the POST endpoint in TWILIO too)
+        response = requests.post('https://xxxxxxxx.ngrok-free.app', data={"Body": user_message}) #Endpoint using ngrok (configure the POST endpoint in TWILIO too)
         if response.status_code == 200:
             return response.text  
         else:
-            return 'Houve um problema ao acessar o serviço do webhook.'
+            return 'Webhook service unreachable.'
     except Exception as e:
-        return f'Erro ao se conectar com o webhook externo: {str(e)}'
+        return f'Error connecting to external webhook: {str(e)}'
 
 
 def gpt4free_response(user_message):
@@ -33,10 +33,10 @@ def gpt4free_response(user_message):
             messages=[{"role": "user", "content": user_message}]
         )
         
-        return response.choices[0].message.content if response.choices else "Desculpe, não consegui entender sua solicitação."
+        return response.choices[0].message.content if response.choices else "Sorry, I could not understand your request."
     
     except Exception as e:
-        return f'Erro ao se conectar com o serviço de IA: {str(e)}'
+        return f'Error connecting to AI service: {str(e)}'
 
 # Whatsapp route. remember to add /whatsapp in the end of your endpoint in twilio
 @app.route('/whatsapp', methods=['POST'])
@@ -49,7 +49,7 @@ def whatsapp_reply():
 
     client.messages.create(
         body=ai_response,
-        from_='whatsapp:+14155238886',  # Twilio's whatsapp number
+        from_='whatsapp:+YOUR_TWILIO_WHATSAPP_SANDBOX_NUMBER',  # Twilio's whatsapp number
         to=sender
     )
 
